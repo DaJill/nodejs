@@ -1,0 +1,683 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Node.js 多人線上踩地雷</title>
+
+    <!--
+    <link href="playground.css" media="all" rel="stylesheet" type="text/css" />
+
+    1:Red       #FF9999
+    2:blue      #9999FF
+    3:yellow    #FFFF99
+    4:green     #99FF99
+
+    -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+
+
+
+
+
+
+
+    .button {display: inline-block; padding: 5px 15px 6px; color: #fff !important; font-size: 13px; font-weight: bold; line-height: 1; text-decoration: none; -moz-border-radius: 5px; -webkit-border-radius: 5px; -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.25); -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.25); text-shadow: 0 -1px 1px rgba(0,0,0,0.25); border-bottom: 1px solid rgba(0,0,0,0.25); position: relative; cursor: pointer; overflow: visible; width: auto; }
+    button::-moz-focus-inner { border: 0; padding: 0; }
+
+    .button:hover { background-color: #111; color: #fff; }
+    .button:active { -webkit-transform: translateY(1px); -moz-transform: translateY(1px); }
+    /* Small Buttons */
+    .small.button { font-size: 11px; }
+    /* Large Buttons */
+    .large.button { font-size: 14px; padding: 8px 19px 9px; }
+    /* Colors for our beloved buttons */
+    .green.button { background-color: #91bd09; }
+    .green.button:hover { background-color: #749a02; }
+    .blue.button { background-color: #2daebf; }
+    .blue.button:hover { background-color: #007d9a; }
+    .red.button { background-color: #e33100; }
+    .red.button:hover { background-color: #872300; }
+    .magenta.button{ background-color: #a9014b; }
+    .magenta.button:hover { background-color: #630030; }
+    .orange.button { background-color: #ff5c00; }
+    .orange.button:hover { background-color: #d45500; }
+    .orangellow.button { background-color: #ffb515; }
+    .orangellow.button:hover { background-color: #fc9200; }
+    .white.button { background-color: #fff; border: 1px solid #ccc; color: #666 !important; font-weight: normal; text-shadow: 0 1px 1px rgba(255,255,255,1); }
+    .white.button:hover { background-color: #eee; }
+
+    /*Strike button*/
+    .strike.button  {background-color: #4ADFC1}
+    .strike.button:hover {background-color: #39ceb0}
+
+    /* Secondary buttons (perfect for Cancels or other secondary actions */
+    .secondary.button { background: #fff url(/images/gradients/36px-black.png) repeat-x 0 0; color: #555 !important; text-shadow: 0 1px 1px rgba(255,255,255,0.5); border: 1px solid #bbb; -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.1); -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .secondary.button:hover { background-color: #eee; color: #444 !important; border-color: #999; }
+
+    /* Make the buttons super awesomer */
+    .super.button { background-image: url(/images/super-button-overlay.png); font-size: 13px; padding: 0; border: 1px solid rgba(0,0,0,.25); -webkit-border-radius: 15px; -moz-border-radius: 15px; }
+    .super.button span { display: block; padding: 4px 15px 6px; -webkit-border-radius: 14px; -moz-border-radius: 14px; border-top: 1px solid rgba(255,255,255,.2); line-height: 1; }
+    .small.super.button { font-size: 11px; -webkit-border-radius: 12px; -moz-border-radius: 12px; }
+    .small.super.button span { padding: 2px 12px 6px; -webkit-border-radius: 11px; -moz-border-radius: 11px; }
+    .small.white.super.button span { padding: 3px 12px 5px; }
+    .large.super.button { background-position: left bottom; -webkit-border-radius: 18px; -moz-border-radius: 18px; }
+    .large.super.button span { font-size: 14px; padding: 7px 20px 9px; -webkit-border-radius: 17px; -moz-border-radius: 17px; }
+
+    @-webkit-keyframes bigAssButtonPulse {
+          from { background-color: #749a02; -webkit-box-shadow: 0 0 25px #333; }
+          50% { background-color: #91bd09; -webkit-box-shadow: 0 0 50px #91bd09; }
+          to { background-color: #749a02; -webkit-box-shadow: 0 0 25px #333; }
+        }
+
+        @-webkit-keyframes greenPulse {
+          from { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #91bd09; -webkit-box-shadow: 0 0 18px #91bd09; }
+          to { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        @-webkit-keyframes bluePulse {
+          from { background-color: #007d9a; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #2daebf; -webkit-box-shadow: 0 0 18px #2daebf; }
+          to { background-color: #007d9a; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        @-webkit-keyframes redPulse {
+          from { background-color: #bc330d; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #e33100; -webkit-box-shadow: 0 0 18px #e33100; }
+          to { background-color: #bc330d; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        @-webkit-keyframes magentaPulse {
+          from { background-color: #630030; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #a9014b; -webkit-box-shadow: 0 0 18px #a9014b; }
+          to { background-color: #630030; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        @-webkit-keyframes orangePulse {
+          from { background-color: #d45500; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #ff5c00; -webkit-box-shadow: 0 0 18px #ff5c00; }
+          to { background-color: #d45500; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        @-webkit-keyframes orangellowPulse {
+          from { background-color: #fc9200; -webkit-box-shadow: 0 0 9px #333; }
+          50% { background-color: #ffb515; -webkit-box-shadow: 0 0 18px #ffb515; }
+          to { background-color: #fc9200; -webkit-box-shadow: 0 0 9px #333; }
+        }
+
+        a.button {
+            -webkit-animation-duration: 2s;
+            -webkit-animation-iteration-count: infinite;
+        }
+
+        .orangellow.button { -webkit-animation-name: orangellowPulse; -webkit-animation-duration: 5s; }
+        .blue.button { -webkit-animation-name: bluePulse; -webkit-animation-duration: 4s; }
+        .green.button { -webkit-animation-name: greenPulse; -webkit-animation-duration: 3s; }
+        .orange.button { -webkit-animation-name: orangePulse; -webkit-animation-duration: 3s; }
+        .magenta.button { -webkit-animation-name: magentaPulse; -webkit-animation-duration: 2s; }
+        .red.button { -webkit-animation-name: redPulse; -webkit-animation-duration: 1s; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.report {
+    position:relative;
+    z-index:1;
+    overflow:hidden;
+    list-style:none;
+    padding:0;
+    margin:0 0 0.25em;
+}
+
+.report a:link,
+.report a:visited {
+    display:block;
+    border:0;
+    padding-left:28px;
+    color:#c55500;
+}
+
+.report a:hover,
+.report a:focus,
+.report a:active {
+    color:#730800;
+    background:transparent;
+}
+
+.report:before,
+.report:after,
+.report a:before,
+.report a:after {
+    content:"";
+    position:absolute;
+    top:50%;
+    left:0;
+}
+
+.report a:before,
+.report a:after {
+    margin:-8px 0 0;
+    background:#c55500;
+}
+
+.report a:before:hover,
+.report a:befor:focuse,
+.report a:before:active {
+    background:#730800;
+}
+/* REPORT
+------------------------------------------------------------------------------------------------------------------------------- */
+
+.report a:before {
+    left:3px;
+    width:7px;
+    height:7px;
+    margin-top:-5px;
+    border-width:7px 0 0 2px;
+    border-style:solid;
+    border-color:#c55500;
+    background:transparent;
+    /* css3 */
+    -webkit-transform:skewY(-8deg);
+    -moz-transform:skewY(-8deg);
+    -ms-transform:skewY(-8deg);
+    -o-transform:skewY(-8deg);
+    transform:skewY(-8deg);
+}
+
+.report a:after {
+    left:9px;
+    width:6px;
+    height:7px;
+    margin-top:-3px;
+    background:#c55500;
+    /* css3 */
+    -webkit-transform:skewY(-6deg);
+    -moz-transform:skewY(-6deg);
+    -ms-transform:skewY(-6deg);
+    -o-transform:skewY(-6deg);
+    transform:skewY(-6deg);
+}
+
+.report a:before:hover,
+.report a:before:focus,
+.report a:befor:activee {
+    border-color:#730800;
+    background:transparent;
+}
+
+.report a:after:hover,
+.report a:after:focus,
+.report a:after:active {
+    background:#730800;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @import url(http://fonts.googleapis.com/earlyaccess/cwtexhei.css);
+        body{font-family: 'cwTeXHei', sans-serif;}
+        a{font-family: 'cwTeXHei', sans-serif;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+        form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        .bombdiv{
+            float:left;
+            width:33px;
+            height:33px;
+            text-align:center;
+            font-size:18px;
+            font-weight:900;
+            background-color:#ffffff;
+            border:1px dotted #ddd;
+            margin:0px;
+            padding:0px;
+        }
+        .cc0{color:black;line-height:28px;font-size:22px;font-weight:900;}
+        .cc1{padding-top:6px;color:black;}
+        .cc2{padding-top:3px;color:green;}
+        .cc3{padding-top:3px;color:red;}
+        .cc4{padding-top:3px;color:#28004D;}
+        .cc5{padding-top:3px;color:#750000;}
+        .cc6{padding-top:3px;color:#930093;}
+        .cc7{padding-top:3px;color:#BF0060;}
+        .cc8{padding-top:3px;color:black;}
+
+        .cc11{background-color:red;}
+
+
+        .player1{background-color:#FFCCCC;border-radius:3px;}
+        .player2{background-color:#CCFFFF;border-radius:3px;}
+        .player3{background-color:#FFDDAA;border-radius:3px;}
+        .player4{background-color:#CCFFCC;border-radius:3px;}
+        .player1c{color:red;}
+        .player2c{color:blue;}
+        .player3c{color:#FF8800;}
+        .player4c{color:green;}
+
+
+        #blockScreen{position:absolute;width:100%;height:100%;background-color:black;opacity: 0.7;display:none;}
+
+        #EndGameButtonDiv{position: absolute;z-index: 99;display:none;width:100%;text-align:center;top:350px;}
+
+        .flag1 a:before {border-color:red;left: 9px;}
+        .flag1 a:before:hover {border-color:red;left: 9px;}
+        .flag1 a:hover {background:red;background-color:#ccc;}
+        .flag1 a:after{background:red;left: 16px;}
+        .flag1 a:after:hover{background:red;left: 16px;}
+
+        .flag2 a:before {border-color:blue; left: 9px;}
+        .flag2 a:hover {background:blue;background-color:#ccc;}
+        .flag2 a:after{background:blue;     left: 16px;}
+
+        .flag3 a:before {border-color:yellow;left: 9px;}
+        .flag3 a:hover {background:yellow;background-color:#ccc;}
+        .flag3 a:after{background:yellow;left: 16px;}
+
+        .flag4 a:before {border-color:green;left: 9px;}
+        .flag4 a:hover {background:green;background-color:#ccc;}
+        .flag4 a:after{background:green;left: 16px;}
+
+
+
+
+        .flag2 a:before:hover{border-color:blue; left: 9px;}
+        .flag3 a:before:hover{border-color:yellow;left: 9px;}
+        .flag4 a:before:hover{border-color:green;left: 9px;}
+
+        .flag2 a:after:hover{background:blue;     left: 16px;}
+        .flag3 a:after:hover{background:yellow;left: 16px;}
+        .flag4 a:after:hover{background:green;left: 16px;}
+
+        .bb{
+            border:2px solid #eee;
+            border-bottom-color:black;
+            border-right-color:black;
+            background-color: #ccc;
+            width: 100%;
+            height:100%;
+            display: inline-block;
+            cursor: pointer;
+            border-radius:3px;
+        }
+        .bb:hover{
+            border:3px solid #eee;
+            border-bottom:1px solid black;
+            border-right:1px solid black;
+
+        }
+
+        #InputNicknameTheme{
+            line-height: 35px;
+            font-size:20px;
+        }
+        #InputNicknameTheme input{
+            line-height: 35px;
+            font-size:20px;
+        }
+
+        #playerList{
+            position:relative;border:1px solid #9955FF;
+            top:50px;
+            font-size:20px;
+            padding:5px;
+            border-radius:10px;
+            left:-5px;
+            width:600px;
+            background-color: white;
+        }
+        #divTimer{
+            font-size:25px;
+            line-height:30px;
+            font-family: 'cwTeXHei', sans-serif;
+        }
+        #ClockTimer{
+            font-size:25px;
+            color:red;
+            font-family: 'cwTeXHei', sans-serif;
+        }
+        .playerResult{
+            font-size:25px;
+            font-weight: 700;
+            color:  #CC00FF;
+        }
+
+        #PlayTheme{
+            display: none;
+            margin:0 auto;
+            padding:10px;
+            width:650px;
+            text-align:center;
+        }
+        #map{
+            padding:10px;
+            text-align:center;
+            border:2px groove #FFFF00;
+            border-radius:10px;
+        }
+        #gm{
+            border:5px groove green;
+            border-radius:10px;
+            padding:10px;
+            position:absolute;
+            left:10px;
+            bottom:10px;
+            display:none1;
+        }
+    </style>
+  </head>
+  <body>
+<!--
+<div class="wall-of-buttons">
+    <a class="blue button"><a href="javascript:donothing()"  class="report testdd">&nbsp;</a></a>
+    <a class="large blue button">&nbsp;</a>
+    <a class="small blue button">&nbsp;</a>
+    <a class="large green button">Look at me!</a>
+    <a class="large red button">I'm Glowing!</a>
+    <a class="large magenta button">Hi ho, Silver!</a>
+</div>
+<div class="report testdd"><a href="#non" style="">&nbsp;</a></div>
+
+-->
+<div id=gm>
+<a class="small blue button" href="javascript:EndGame()">TestEndGame</a><br>
+<a class="small orangellow button" href="javascript:changeState(5)">CB: orangellow</a><br>
+<a class="small blue button" href="javascript:changeState(4)">CB: blue</a><br>
+<a class="small green button" href="javascript:changeState(3)">CB: green</a><br>
+<a class="small magenta button" href="javascript:changeState(2)">CB: magenta</a><br>
+<a class="small red button" href="javascript:changeState(1)">CB: red</a><br>
+<a class="small orange button" href="javascript:changeState(0)">CB: orange</a><br>
+
+</div>
+
+
+    <div id=blockScreen></div>
+
+
+    <div id=EndGameButtonDiv>
+        <a class="large blue button" href='javascript:StartGame()' style='font-size:48px'>重新開始</a>
+        <div id=divResult></div>
+    </div>
+
+    <div id=InputNicknameTheme><center>
+        <p>來來來~要玩先輸入暱稱嘿</p>
+        <p><input type=text id=sNickname value=abc></p>
+        <p><a class="large green button" href='javascript:JoinGame()'>送出</a></p>
+    </div>
+
+
+    <div id=PlayTheme>
+
+        <a class="large orangellow button" id=stateButton>
+        <i id=faceoff1 class="fa fa-smile-o displayFace" style="font-size:48px"></i>
+        <i id=faceoff2 class="fa fa-meh-o displayFace" style="font-size:48px"></i>
+        <i id=faceoff3 class="fa fa-frown-o displayFace" style="font-size:48px"></i>
+        <div id=divTimer>Timer:<span id=ClockTimer>000</span></div>
+
+        <div class="box"></div>
+
+        <div id=map></div>
+        </a>
+
+        <div id=playerList>
+            <table width=100%><thead>
+                <td class=player1 width=25%><i class="fa fa-user player1c" style="font-size:36px"></i></td>
+                <td class=player2 width=25%><i class="fa fa-user player2c" style="font-size:36px"></i></td>
+                <td class=player3 width=25%><i class="fa fa-user player3c" style="font-size:36px"></i></td>
+                <td class=player4 width=25%><i class="fa fa-user player4c" style="font-size:36px"></i></td>
+            </thead>
+            <tbody>
+            <tr>
+                <td id=playerNickname1 class=player1c></td>
+                <td id=playerNickname2 class=player2c></td>
+                <td id=playerNickname3 class=player3c></td>
+                <td id=playerNickname4 class=player4c></td>
+            </tr>
+            <tr>
+                <td id=playerCaculator1 class=player1c></td>
+                <td id=playerCaculator2 class=player2c></td>
+                <td id=playerCaculator3 class=player3c></td>
+                <td id=playerCaculator4 class=player4c></td>
+            </tr>
+            <tr>
+                <td id=playerResult1 class=playerResult></td>
+                <td id=playerResult2 class=playerResult></td>
+                <td id=playerResult3 class=playerResult></td>
+                <td id=playerResult4 class=playerResult></td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+        <!--
+        <ul id="messages"></ul>
+
+        <form action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+        -->
+    </div>
+    </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+
+$('#map').bind('contextmenu', function () {
+    return false;
+});
+function donothing(){
+
+}
+function JoinGame(){
+    $sNickname = $("#sNickname").val();
+    if ($sNickname == ''){
+        alert('請輸入暱稱~');
+        return;
+    }
+    $("#InputNicknameTheme").hide();
+    $("#PlayTheme").show();
+    socket.emit('map init', $sNickname);
+    return false;
+}
+function EndGame(_iGameStatus) {
+    aGameStatus = _iGameStatus.GameStatus;
+    aCaculator  = _iGameStatus.Caculator;
+    $("#EndGameButtonDiv").show();
+    $("#blockScreen").show();
+
+    var sKey = '#playerResult' + aGameStatus.Owner;
+    var sResult = '';
+    var i = 0;
+    var iCacu = 1;
+
+    if (aGameStatus.Result == 1) {
+        sResult = 'Last Pick';
+        $(sKey).html(sResult);
+        for (i = 2; i < 5; i ++) {
+            iCacu = (aCaculator[iCacu] <= aCaculator[i])? i : iCacu ;
+        }
+        sKey = '#playerResult' + iCacu;
+        sResult = ' Winner !';
+        $(sKey).html(sResult);
+        faceoff(1);
+    } else if (aGameStatus.Result == 2) {
+        $(sKey).html('Loser');
+        faceoff(3);
+    }
+}
+function StartGame(){
+    socket.emit('restart');
+    return false;
+}
+
+var socket = io();
+var aBom = [];
+var aClick = [];
+var $iWho = 0;
+var oData = {
+    PlayerInfo: {
+        1: 'abc',
+        2: '2abc',
+        3: '3abc',
+        4: '4abc'
+    }
+};
+var whoamI = 0;
+socket.on('map init', function(_aGameInfo, _iAmPlayer){
+    whoamI = (_iAmPlayer !== undefined && whoamI === 0)? _iAmPlayer:whoamI;
+    refreshMonitor(_aGameInfo);
+    if (_aGameInfo.GameStatus.Result != 0) {
+        EndGame(_aGameInfo);
+    }
+});
+socket.on('action game', function(_aGameInfo){
+    refreshMonitor(_aGameInfo);
+
+    if (_aGameInfo.GameStatus.Result != 0) {
+        EndGame(_aGameInfo);
+    }
+
+});
+socket.on('restart', function(_aGameInfo){
+    faceoff(1);
+    $("#blockScreen").hide();
+    $("#EndGameButtonDiv").hide();
+    $("#playerResult1").html('');
+    $("#playerResult2").html('');
+    $("#playerResult3").html('');
+    $("#playerResult4").html('');
+    $("#ClockTimer").html(0);
+    refreshMonitor(_aGameInfo);
+});
+socket.on('map Timer', function(_iTimer){
+    $("#ClockTimer").html(_iTimer);
+});
+function createMap(_oMap) {
+    var ix = 0;
+    var lx = getLength(_oMap);
+    var iy = 0;
+    var ly = getLength(_oMap[0]);
+    var iValue = 0;
+    var iState = 0;
+    var iOwner = 0;
+    var ru = '';
+     for(ix = 0 ; ix < lx ; ix+=1) {
+        for(iy = 0 ; iy < ly ; iy+=1) {
+            iValue = _oMap[iy][ix].value;
+            iState = _oMap[iy][ix].state;
+            iOwner = _oMap[iy][ix].owner;
+            ru += '<div class="bombdiv '+ ((iState == 1) ? 'cc1 player'+ iOwner : 'cc0') +'">'
+            ru += getBom(iy, ix, iValue, iState, iOwner) + '</div>';
+        }
+        ru += '<div style="clear:left"></div>';
+    }
+    $("#map").html(ru);
+    $( ".bb" ).on( "mousedown", function( event ) {
+        faceoff(2);
+    });
+    $( ".bb" ).on( "mouseup", function( event ) {
+      getMouse($(this).attr("iY"),$(this).attr("iX"),event.which);
+    });
+}
+function refreshMonitor(_aGameInfo) {
+    flashPlayerInfo(_aGameInfo.PlayerInfo,_aGameInfo.Caculator);
+    createMap(_aGameInfo.Map);
+}
+function flashPlayerInfo(oNickname,oCaculator) {
+    var i = 1;
+    var sKey = '';
+    oNickname[whoamI] = oNickname[whoamI] + "＊";
+    for (i = 1 ; i < 5; i ++){
+        sKey = "#playerNickname" + i;
+        $(sKey).html(oNickname[i]);
+        sKey = "#playerCaculator" + i;
+        $(sKey).html(oCaculator[i]);
+    }
+}
+function faceoff(_i) {
+    $('.displayFace').hide();
+    var sKey = '#faceoff' + _i;
+    $(sKey).show();
+}
+function getLength(o) {
+    var count = 0;
+    for(var i in o){
+        count ++;
+    }
+    return count;
+};
+
+function getMouse($_iX, $_iY, $_iClick) {
+
+
+    if ($iWho < 5) {
+        uploadClick($_iX, $_iY, $_iClick);
+    }
+    faceoff(1);
+}
+
+function uploadClick(ix, iy, ic){
+    ic = (ic == 3) ? 2 : 1 ;
+    socket.emit('action game', ix, iy, ic);
+    return false;
+}
+
+function getBom($_ix, $_iy, $_iValue, $_iState, $_iOwner){
+    if ($_iState == 0) {
+        return '<a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a>';
+    } else if ($_iState == 2) {
+        return '<div class="report flag'+ $_iOwner +'"><a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a></div>';
+    } else if ($_iValue == 0) {
+        return '';
+    } else if ($_iValue == -1) {
+        return '<i class="fa fa-bomb" style="font-size:24px"></i>';
+    }
+    return $_iValue;
+}
+
+function changeState(_iSelect) {
+    var sKey = ''
+    if (_iSelect == 5) {sKey = 'large orangellow button';}
+    if (_iSelect == 4) {sKey = 'large blue button';}
+    if (_iSelect == 3) {sKey = 'large green button';}
+    if (_iSelect == 2) {sKey = 'large magenta button';}
+    if (_iSelect == 1) {sKey = 'large red button';}
+    if (_iSelect == 0) {sKey = 'large orange button';}
+    $('#stateButton').removeClass($('#stateButton').attr('class')).addClass(sKey);
+}
+faceoff(1);
+  </script>
+</html>
