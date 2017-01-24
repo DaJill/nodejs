@@ -249,12 +249,14 @@
         body{font-family: 'cwTeXHei', sans-serif;}
         a{font-family: 'cwTeXHei', sans-serif;}
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+        form { background: #000; padding: 3px; position: absolute; bottom: 0;left:0; width: 100%; }
         form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
         form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
         #messages { list-style-type: none; margin: 0; padding: 0; }
         #messages li { padding: 5px 10px; }
         #messages li:nth-child(odd) { background: #eee; }
+
+
         .bombdiv{
             float:left;
             width:33px;
@@ -319,7 +321,7 @@
         .flag3 a:before:hover{border-color:yellow;left: 9px;}
         .flag4 a:before:hover{border-color:green;left: 9px;}
 
-        .flag2 a:after:hover{background:blue;     left: 16px;}
+        .flag2 a:after:hover{background:blue; left: 16px;}
         .flag3 a:after:hover{background:yellow;left: 16px;}
         .flag4 a:after:hover{background:green;left: 16px;}
 
@@ -356,7 +358,7 @@
             font-size:20px;
             padding:5px;
             border-radius:10px;
-            left:-5px;
+            left:10px;
             width:600px;
             background-color: white;
         }
@@ -395,8 +397,24 @@
             padding:10px;
             position:absolute;
             left:10px;
-            bottom:10px;
-            display:none1;
+            bottom:50px;
+            display:none;
+            z-index: 100;
+        }
+        .msg {
+            width:1000%;
+            position:absolute;
+            right:0;
+            color:black;
+            opacity: 0.7;
+            line-height:50px;
+            height:50px;
+            z-index: 99;
+        }
+        .msgdiv{
+            line-height:50px;
+            height:50px;
+
         }
     </style>
   </head>
@@ -414,21 +432,21 @@
 
 -->
 <div id=gm>
-<a class="small blue button" href="javascript:EndGame()">TestEndGame</a><br>
-<a class="small orangellow button" href="javascript:changeState(5)">CB: orangellow</a><br>
-<a class="small blue button" href="javascript:changeState(4)">CB: blue</a><br>
-<a class="small green button" href="javascript:changeState(3)">CB: green</a><br>
-<a class="small magenta button" href="javascript:changeState(2)">CB: magenta</a><br>
-<a class="small red button" href="javascript:changeState(1)">CB: red</a><br>
-<a class="small orange button" href="javascript:changeState(0)">CB: orange</a><br>
+<a class="small blue button" href="javascript:switchAuto()">開關自動填字</a><hr>
+<a class="small orangellow button" href="javascript:changeState(5)">背景: orangellow</a><br>
+<a class="small blue button" href="javascript:changeState(4)">背景: blue</a><br>
+<a class="small green button" href="javascript:changeState(3)">背景: green</a><br>
+<a class="small magenta button" href="javascript:changeState(2)">背景: magenta</a><br>
+<a class="small red button" href="javascript:changeState(1)">背景: red</a><br>
+<a class="small orange button" href="javascript:changeState(0)">背景: orange</a><br>
 
 </div>
 
 
-    <div id=blockScreen></div>
+    <div id=blockScreen style='z-index:10'></div>
 
 
-    <div id=EndGameButtonDiv>
+    <div id=EndGameButtonDiv style='z-index:12'>
         <a class="large blue button" href='javascript:StartGame()' style='font-size:48px'>重新開始</a>
         <div id=divResult></div>
     </div>
@@ -453,7 +471,7 @@
         <div id=map></div>
         </a>
 
-        <div id=playerList>
+        <div id=playerList style='z-index:11'>
             <table width=100%><thead>
                 <td class=player1 width=25%><i class="fa fa-user player1c" style="font-size:36px"></i></td>
                 <td class=player2 width=25%><i class="fa fa-user player2c" style="font-size:36px"></i></td>
@@ -485,199 +503,327 @@
         <!--
         <ul id="messages"></ul>
 
-        <form action="">
-            <input id="m" autocomplete="off" /><button>Send</button>
-        </form>
+        <div class=msgdiv id=messages0></div>
+        <div class=msgdiv id=messages1></div>
+        <div class=msgdiv id=messages2></div>
+        <div class=msgdiv id=messages3></div>
+        <div class=msgdiv id=messages4></div>
+        <div class=msgdiv id=messages5></div>
+        <div class=msgdiv id=messages6></div>
+        <div class=msgdiv id=messages7></div>
+        <div class=msgdiv id=messages8></div>
+        <div class=msgdiv id=messages9></div>
+        <div class=msgdiv id=messages10></div>
+        <div class=msgdiv id=messages11></div>
+        <div class=msgdiv id=messages12></div>
+        <div class=msgdiv id=messages13></div>
+        <div class=msgdiv id=messages14></div>
+        <div class=msgdiv id=messages15></div>
+        <div class=msgdiv id=messages16></div>
+        <div class=msgdiv id=messages17></div>
+        <div class=msgdiv id=messages18></div>
+        <div class=msgdiv id=messages19></div>
+        <div id=messagesDiv></div>
+    <form action="" style="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
         -->
     </div>
     </body>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-  <script>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
 
-$('#map').bind('contextmenu', function () {
-    return false;
-});
-function donothing(){
+    var socket = io();
+    var aBom = [];
+    var aClick = [];
+    var $iWho = 0;
+    var whoamI = 0;
 
-}
-function JoinGame(){
-    $sNickname = $("#sNickname").val();
-    if ($sNickname == ''){
-        alert('請輸入暱稱~');
+    $('#map').bind('contextmenu', function () {
+        return false;
+    });
+
+    // 頻道:遊戲初始
+    socket.on('map init', function(_aGameInfo, _iAmPlayer) {
+        //初始化該玩家為那個ID 1~4
+        whoamI = (_iAmPlayer !== undefined && whoamI === 0)? _iAmPlayer:whoamI;
+        refreshMonitor(_aGameInfo);
+        if (_aGameInfo.GameStatus.Result != 0) {
+            EndGame(_aGameInfo);
+        }
+    });
+
+    // 頻道:遊戲進行中
+    socket.on('action game', function(_aGameInfo) {
+        refreshMonitor(_aGameInfo);
+        if (_aGameInfo.GameStatus.Result != 0) {
+            EndGame(_aGameInfo);
+        }
+    });
+
+    // 頻道:重新開始
+    socket.on('restart', function(_aGameInfo) {
+        faceoff(1);
+        $("#blockScreen").hide();
+        $("#EndGameButtonDiv").hide();
+        $("#playerResult1").html('');
+        $("#playerResult2").html('');
+        $("#playerResult3").html('');
+        $("#playerResult4").html('');
+        $("#ClockTimer").html(0);
+        refreshMonitor(_aGameInfo);
+    });
+
+    // 頻道:計時
+    socket.on('map Timer', function(_iTimer) {
+        $("#ClockTimer").html(_iTimer);
+    });
+
+    // 開始遊戲,上傳暱稱
+    function JoinGame() {
+        $sNickname = $("#sNickname").val();
+        if ($sNickname == '') {
+            alert('請輸入暱稱~');
+            return;
+        }
+        $("#InputNicknameTheme").hide();
+        $("#PlayTheme").fadeIn();;
+        socket.emit('map init', $sNickname);
+    }
+
+    // 遊戲結束,重置參數
+    function EndGame(_iGameStatus) {
+        aGameStatus = _iGameStatus.GameStatus;
+        aCaculator  = _iGameStatus.Caculator;
+        $("#EndGameButtonDiv").show();
+        $("#blockScreen").show();
+
+        var sKey = '#playerResult' + aGameStatus.Owner;
+        var sResult = '';
+        var i = 0;
+        var iCacu = 1;
+
+        // 遊戲結果:1贏
+        if (aGameStatus.Result == 1) {
+            sResult = 'Last Pick';
+            $(sKey).html(sResult);
+            //取最贏的那位
+            for (i = 2; i < 5; i ++) {
+                iCacu = (aCaculator[iCacu] <= aCaculator[i])? i : iCacu ;
+            }
+            sKey = '#playerResult' + iCacu;
+            sResult = ' Winner !';
+            $(sKey).html(sResult);
+            faceoff(1);
+
+        // 遊戲結果:2死亡(有人踩到地雷)
+        } else if (aGameStatus.Result == 2) {
+            $(sKey).html('Loser');
+            faceoff(3);
+        }
+    }
+
+    // 重新開始
+    function StartGame() {
+        socket.emit('restart');
         return;
     }
-    $("#InputNicknameTheme").hide();
-    $("#PlayTheme").show();
-    socket.emit('map init', $sNickname);
-    return false;
-}
-function EndGame(_iGameStatus) {
-    aGameStatus = _iGameStatus.GameStatus;
-    aCaculator  = _iGameStatus.Caculator;
-    $("#EndGameButtonDiv").show();
-    $("#blockScreen").show();
 
-    var sKey = '#playerResult' + aGameStatus.Owner;
-    var sResult = '';
-    var i = 0;
-    var iCacu = 1;
-
-    if (aGameStatus.Result == 1) {
-        sResult = 'Last Pick';
-        $(sKey).html(sResult);
-        for (i = 2; i < 5; i ++) {
-            iCacu = (aCaculator[iCacu] <= aCaculator[i])? i : iCacu ;
+    // 畫踩地雷地圖
+    function createMap(_oMap) {
+        var ix = 0;
+        var lx = getLength(_oMap);
+        var iy = 0;
+        var ly = getLength(_oMap[0]);
+        var iValue = 0;
+        var iState = 0;
+        var iOwner = 0;
+        var ru = '';
+         for(ix = 0 ; ix < lx ; ix+=1) {
+            for(iy = 0 ; iy < ly ; iy+=1) {
+                iValue = _oMap[iy][ix].value;
+                iState = _oMap[iy][ix].state;
+                iOwner = _oMap[iy][ix].owner;
+                ru += '<div class="bombdiv '+ ((iState == 1) ? 'cc1 player'+ iOwner : 'cc0') +'">'
+                ru += getBom(iy, ix, iValue, iState, iOwner) + '</div>';
+            }
+            ru += '<div style="clear:left"></div>';
         }
-        sKey = '#playerResult' + iCacu;
-        sResult = ' Winner !';
-        $(sKey).html(sResult);
+        $("#map").html(ru);
+        // 畫完之後的設定mousedown 變臉
+        $(".bb").on( "mousedown", function( event ) {
+            faceoff(2);
+        });
+        // 畫完之後的設定mouseup 送出該座標及滑鼠按鈕事件
+        $(".bb").on( "mouseup", function( event ) {
+          getMouse($(this).attr("iY"),$(this).attr("iX"),event.which);
+        });
+    }
+
+    // 重整畫面
+    function refreshMonitor(_aGameInfo) {
+        flashPlayerInfo(_aGameInfo.PlayerInfo,_aGameInfo.Caculator);
+        createMap(_aGameInfo.Map);
+    }
+
+    // 重整玩家資料
+    function flashPlayerInfo(oNickname,oCaculator) {
+        var i = 1;
+        var sKey = '';
+        oNickname[whoamI] = oNickname[whoamI] + "＊";
+        for (i = 1 ; i < 5; i ++) {
+            sKey = "#playerNickname" + i;
+            $(sKey).html(oNickname[i]);
+            sKey = "#playerCaculator" + i;
+            $(sKey).html(oCaculator[i]);
+        }
+    }
+
+    // 變臉
+    function faceoff(_i) {
+        $('.displayFace').hide();
+        var sKey = '#faceoff' + _i;
+        $(sKey).show();
+    }
+
+    // 取物件長度
+    function getLength(o) {
+        var count = 0;
+        for(var i in o) {
+            count ++;
+        }
+        return count;
+    };
+
+    // 滑鼠點擊座標及滑鼠按鈕事件 先變臉,再判斷是否為可以上傳動作的玩家
+    function getMouse($_iX, $_iY, $_iClick) {
         faceoff(1);
-    } else if (aGameStatus.Result == 2) {
-        $(sKey).html('Loser');
-        faceoff(3);
-    }
-}
-function StartGame(){
-    socket.emit('restart');
-    return false;
-}
-
-var socket = io();
-var aBom = [];
-var aClick = [];
-var $iWho = 0;
-var oData = {
-    PlayerInfo: {
-        1: 'abc',
-        2: '2abc',
-        3: '3abc',
-        4: '4abc'
-    }
-};
-var whoamI = 0;
-socket.on('map init', function(_aGameInfo, _iAmPlayer){
-    whoamI = (_iAmPlayer !== undefined && whoamI === 0)? _iAmPlayer:whoamI;
-    refreshMonitor(_aGameInfo);
-    if (_aGameInfo.GameStatus.Result != 0) {
-        EndGame(_aGameInfo);
-    }
-});
-socket.on('action game', function(_aGameInfo){
-    refreshMonitor(_aGameInfo);
-
-    if (_aGameInfo.GameStatus.Result != 0) {
-        EndGame(_aGameInfo);
-    }
-
-});
-socket.on('restart', function(_aGameInfo){
-    faceoff(1);
-    $("#blockScreen").hide();
-    $("#EndGameButtonDiv").hide();
-    $("#playerResult1").html('');
-    $("#playerResult2").html('');
-    $("#playerResult3").html('');
-    $("#playerResult4").html('');
-    $("#ClockTimer").html(0);
-    refreshMonitor(_aGameInfo);
-});
-socket.on('map Timer', function(_iTimer){
-    $("#ClockTimer").html(_iTimer);
-});
-function createMap(_oMap) {
-    var ix = 0;
-    var lx = getLength(_oMap);
-    var iy = 0;
-    var ly = getLength(_oMap[0]);
-    var iValue = 0;
-    var iState = 0;
-    var iOwner = 0;
-    var ru = '';
-     for(ix = 0 ; ix < lx ; ix+=1) {
-        for(iy = 0 ; iy < ly ; iy+=1) {
-            iValue = _oMap[iy][ix].value;
-            iState = _oMap[iy][ix].state;
-            iOwner = _oMap[iy][ix].owner;
-            ru += '<div class="bombdiv '+ ((iState == 1) ? 'cc1 player'+ iOwner : 'cc0') +'">'
-            ru += getBom(iy, ix, iValue, iState, iOwner) + '</div>';
+        if (whoamI < 5) {
+            uploadClick($_iX, $_iY, $_iClick);
         }
-        ru += '<div style="clear:left"></div>';
     }
-    $("#map").html(ru);
-    $( ".bb" ).on( "mousedown", function( event ) {
-        faceoff(2);
-    });
-    $( ".bb" ).on( "mouseup", function( event ) {
-      getMouse($(this).attr("iY"),$(this).attr("iX"),event.which);
-    });
-}
-function refreshMonitor(_aGameInfo) {
-    flashPlayerInfo(_aGameInfo.PlayerInfo,_aGameInfo.Caculator);
-    createMap(_aGameInfo.Map);
-}
-function flashPlayerInfo(oNickname,oCaculator) {
-    var i = 1;
-    var sKey = '';
-    oNickname[whoamI] = oNickname[whoamI] + "＊";
-    for (i = 1 ; i < 5; i ++){
-        sKey = "#playerNickname" + i;
-        $(sKey).html(oNickname[i]);
-        sKey = "#playerCaculator" + i;
-        $(sKey).html(oCaculator[i]);
-    }
-}
-function faceoff(_i) {
-    $('.displayFace').hide();
-    var sKey = '#faceoff' + _i;
-    $(sKey).show();
-}
-function getLength(o) {
-    var count = 0;
-    for(var i in o){
-        count ++;
-    }
-    return count;
-};
 
-function getMouse($_iX, $_iY, $_iClick) {
-
-
-    if ($iWho < 5) {
-        uploadClick($_iX, $_iY, $_iClick);
+    // 上傳滑鼠點擊座標及滑鼠按鈕事件
+    function uploadClick(ix, iy, ic) {
+        ic = (ic == 3) ? 2 : 1 ;
+        socket.emit('action game', ix, iy, ic);
+        return;
     }
+
+    // 座標內的內容
+    function getBom($_ix, $_iy, $_iValue, $_iState, $_iOwner) {
+        // 按鈕:可點
+        if ($_iState == 0) {
+            return '<a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a>';
+        // 按鈕:插旗
+        } else if ($_iState == 2) {
+            return '<div class="report flag'+ $_iOwner +'"><a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a></div>';
+        // 如果是0 回傳空
+        } else if ($_iValue == 0) {
+            return '';
+        // 如果是炸彈
+        } else if ($_iValue == -1) {
+            // doBom($_ix, $_iy);
+            return '<i class="fa fa-bomb" id="BB'+$_ix+'_'+$_iy+'" style="font-size:24px"></i>';
+        }
+        return $_iValue;
+    }
+
     faceoff(1);
-}
 
-function uploadClick(ix, iy, ic){
-    ic = (ic == 3) ? 2 : 1 ;
-    socket.emit('action game', ix, iy, ic);
-    return false;
-}
+</script>
+<script>
+    // function doBom($_ix, $_iy, $_sColor) {
+    //     var sKey = 'BB'+$_ix+'_'+$_iy;
 
-function getBom($_ix, $_iy, $_iValue, $_iState, $_iOwner){
-    if ($_iState == 0) {
-        return '<a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a>';
-    } else if ($_iState == 2) {
-        return '<div class="report flag'+ $_iOwner +'"><a class="bb" value="　" iX='+$_ix+' iY='+$_iy+'>&nbsp;</a></div>';
-    } else if ($_iValue == 0) {
-        return '';
-    } else if ($_iValue == -1) {
-        return '<i class="fa fa-bomb" style="font-size:24px"></i>';
+    //     setTimeout()
+    // }
+
+    // 換背景
+    function changeState(_iSelect) {
+        var sKey = ''
+        if (_iSelect == 5) {sKey = 'large orangellow button';}
+        if (_iSelect == 4) {sKey = 'large blue button';}
+        if (_iSelect == 3) {sKey = 'large green button';}
+        if (_iSelect == 2) {sKey = 'large magenta button';}
+        if (_iSelect == 1) {sKey = 'large red button';}
+        if (_iSelect == 0) {sKey = 'large orange button';}
+        $('#stateButton').removeClass($('#stateButton').attr('class')).addClass(sKey);
     }
-    return $_iValue;
-}
 
-function changeState(_iSelect) {
-    var sKey = ''
-    if (_iSelect == 5) {sKey = 'large orangellow button';}
-    if (_iSelect == 4) {sKey = 'large blue button';}
-    if (_iSelect == 3) {sKey = 'large green button';}
-    if (_iSelect == 2) {sKey = 'large magenta button';}
-    if (_iSelect == 1) {sKey = 'large red button';}
-    if (_iSelect == 0) {sKey = 'large orange button';}
-    $('#stateButton').removeClass($('#stateButton').attr('class')).addClass(sKey);
-}
-faceoff(1);
-  </script>
-</html>
+</script>
+<script>
+    var msgIndex = 0;
+    var msgIndexMax = 20;
+    // 產生亂數
+    function getRand(_iMin, _iMax) {
+        return Math.floor(Math.random() * (_iMax - _iMin + 1)) + _iMin;
+    }
+    $('form').submit(function(){
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+    socket.on('chat message', function(msg) {
+        msgIndex = (msgIndex < msgIndexMax - 1)? msgIndex + 1 : 0;
+        var iScroll = getRand(15,30);
+        var iSize = getRand(14,30);
+        var iTop = (getRand(0,3) == 0)? getRand(0,40):getRand(650,document.body.clientHeight-80);
+        var sKey = '#messages' + msgIndex;
+        var sStr = '<marquee direction="left" height="50" behavior="slide" class="msg" ';
+        sStr += ' scrollamount=' + iScroll + ' style="font-size:' + iSize + 'px;top:' + iTop + 'px;">';
+        sStr += '<i class="fa fa-user" style="font-size:' + iSize + 'px"></i>';
+        sStr += msg + '</marquee>';
+        $(sKey).html(sStr);
+    });
+
+</script>
+<script>
+    var iAutoMsg = 0
+    function getRandStr() {
+        var iStrLength = getRand(2,50);
+        var i = 0;
+        var iTemp = 0;
+        var sStr = '';
+        var mode = 0;
+        var sMsg = [];
+        sMsg[1] = ['Fred', 'A~Q', 'Adam', 'Jerry', 'Leif', 'Lester', 'Luke', 'Minffy', 'Ricky', 'Ryan', 'Valar', 'Jr', '大J', 'Demi', 'Tracy', 'Lion'];
+        sMsg[2] = ['走到', '有', '開始', '起來', '上去', '願意', '可以', '想念', '打算', '喜歡', '希望', '害伯', '擔心', '討厭', '覺的', '嘗試'];
+        sMsg[3] = ['體貼的', '建設性的', '好沉思的', '有合作精神的', '富創造力的', '有衝勁拼搏精神的', '可靠的', '老練的', '有策略的', '守紀律的', '盡職的認真的', '敏感多疑的', '頑固', '固執的', '耿直', '溫柔', '賢惠', '謙虛', '謙遜', '善良堅強'];
+        sMsg[4] = ['為了部落', '台北', '台中', '什麼鬼', '遊戲', '測試', '企鵝', 'KFC', '麥噹噹', '完旦旦', '紅包', '工程師', '星巴克', '電影', 'PS4']
+        sMsg[5] = ['(￣Γ￣)', 'ъ( ﾟｰ^)♪', 'v(´∀｀*v)', '（＿□＿：）', '(≧∀≦)×NO', '【Ｎ】☆【◎】(((((●；Д；●)))))', 'o(^・x・^)w', '（＠◇＠）', 'ΗЁＬＬ０♪ヾ(-ω-｀o)=ε3=ε3=ε3=ε3', '{{{{（*￣д￣）}}}}', '★☆。.:*:･"ﾟ★βyёヾ(o･(ェ)･o)ﾉβyё★｡.:*:･"☆★', '（^ρ^）', '(╥_╥)v', '｀;:ﾞ｀;:ﾞ;｀(ﾟДﾟ*)', '＼(´ε｀ )／', '(・ω<)']
+        for (i = 0; i < iStrLength; i ++) {
+            mode = getRand(0,5);
+            if (mode == 0){
+                iTemp = getRand(33,125);
+                iTemp = (iTemp == 34)? 123:iTemp;
+                iTemp = (iTemp == 39)? 124:iTemp;
+                iTemp = (iTemp == 60)? 125:iTemp;
+                iTemp = (iTemp == 62)? 126:iTemp;
+                sStr += String.fromCharCode(iTemp);
+            } else {
+                i = i + 5;
+                sStr += sMsg[mode][getRand(0,15)];
+            }
+
+        }
+        return sStr;
+    }
+    function startStr() {
+        // 時間長短
+        var iSec = getRand(500,2500)
+        setTimeout("startStr()", iSec);
+        if (iAutoMsg == 1) {
+            var sMsg = getRandStr();
+            socket.emit('chat message', sMsg);
+        }
+    }
+    //startStr();
+    function switchAuto() {
+        iAutoMsg = (iAutoMsg == 0)? 1:0;
+    }
+
+
+</script>
